@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -10,13 +11,13 @@ pipeline {
 
         stage('Freeze dependencies') {
             steps {
-                bat 'cd employee-api && uv pip freeze > requirements.txt'
+                sh 'cd employee-api && python3 -m pip freeze > requirements.txt'
             }
         }
 
         stage('Build versioned package') {
             steps {
-                bat 'powershell.exe -Command "Compress-Archive -Path employee-api\\main.py, employee-api\\requirements.txt -DestinationPath employee-api-build-%BUILD_NUMBER%-%GIT_COMMIT:~0,7%.zip -Force"'
+                sh 'zip -j employee-api-build-${BUILD_NUMBER}.zip employee-api/main.py employee-api/requirements.txt'
             }
         }
 
