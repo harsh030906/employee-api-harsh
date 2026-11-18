@@ -1,3 +1,4 @@
+
 ---
 - name: Install Python and venv
   ansible.builtin.apt:
@@ -8,16 +9,28 @@
     state: present
     update_cache: true
 
-- name: Create app directory
+- name: Create employee application user
+  ansible.builtin.user:
+    name: "{{ app_user }}"
+    system: true
+    create_home: false
+    shell: /usr/sbin/nologin
+    state: present
+
+- name: Create application directory
   ansible.builtin.file:
     path: "{{ app_dir }}"
     state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
     mode: "0755"
 
 - name: Copy main.py
   ansible.builtin.copy:
     src: "{{ src_dir }}/main.py"
     dest: "{{ app_dir }}/main.py"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
     mode: "0644"
   notify: Restart employee-api
 
@@ -25,10 +38,12 @@
   ansible.builtin.copy:
     src: "{{ src_dir }}/requirements.txt"
     dest: "{{ app_dir }}/requirements.txt"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
     mode: "0644"
   notify: Restart employee-api
 
-- name: Install dependencies in a virtualenv
+- name: Install dependencies in virtualenv
   ansible.builtin.pip:
     requirements: "{{ app_dir }}/requirements.txt"
     virtualenv: "{{ app_dir }}/venv"
@@ -41,7 +56,7 @@
     mode: "0644"
   notify: Restart employee-api
 
-- name: Enable and start the service
+- name: Enable and start employee-api service
   ansible.builtin.systemd:
     name: employee-api
     enabled: true

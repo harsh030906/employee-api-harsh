@@ -1,5 +1,10 @@
+
 app_port: 8000
+
 app_dir: /opt/employee-api
+
 app_user: employeeapp
-src_dir: /mnt/d/devops/employee-api
-python_bin: /home/ashwath/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12
+
+src_dir: "{{ playbook_dir }}/../employee-api"
+
+python_bin: /usr/bin/python3
